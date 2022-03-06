@@ -2,46 +2,51 @@ import react from "react";
 import { Component } from "react";
 import { posts } from "../../shared/projectData";
 import "./BlogContent.css";
+import { AddPostForm } from "./components/AddPostForm";
 import { BlogCard } from "./components/BlogCard";
 
 export class BlogContent extends Component {
   state = {
-    showBlog: true,
-    blogArr: JSON.parse(localStorage.getItem('blogPosts')) || posts //получаем инфо о лайке с localStorage, если лайк уже стоит, возьмем информацию оттуда
+    showAddForm: false,
+    blogArr: JSON.parse(localStorage.getItem("blogPosts")) || posts, //получаем инфо о лайке с localStorage, если лайк уже стоит, возьмем информацию оттуда
   };
 
-  likePost = pos => {
+  likePost = (pos) => {
     const temp = [...this.state.blogArr];
-    temp[pos].liked = !temp[pos].liked
+    temp[pos].liked = !temp[pos].liked;
 
     this.setState({
-      blogArr: temp
-    })
+      blogArr: temp,
+    });
 
-    localStorage.setItem('blogPosts', JSON.stringify(temp))
-  }
+    localStorage.setItem("blogPosts", JSON.stringify(temp));
+  };
 
-
-  toggleBlog = () => {
-    this.setState(({showBlog}) => {
-      return {
-        showBlog: !showBlog
-      }
-    })
-    }
-
-  deletePost = pos => {
+  deletePost = (pos) => {
     if (window.confirm(`Удалить ${this.state.blogArr[pos].title}?`)) {
       const temp = [...this.state.blogArr];
       temp.splice(pos, 1);
 
       this.setState({
-        blogArr: temp
-      })
+        blogArr: temp,
+      });
 
       localStorage.setItem("blogPosts", JSON.stringify(temp));
     }
+  };
+
+  handleAddFormShow = () => {
+    this.setState({
+      showAddForm: true
+    })
   }
+
+  handleAddFormHide = () => {
+    this.setState({
+      showAddForm: false
+    });
+  }
+
   render() {
     const blogPosts = this.state.blogArr.map((item, pos) => {
       return (
@@ -58,23 +63,15 @@ export class BlogContent extends Component {
 
     return (
       <>
-        <button onClick={this.toggleBlog}>{
-          this.state.showBlog ? "Скрыть блог"
-          : "Показать блог"
-        }
-        </button>
-        
-        {
-          this.state.showBlog ? 
-          <>
-            <h1>Simple Blog</h1>
-            <div className="posts">
-              {blogPosts}
-            </div>
-            </>
-            : null
-        }
-        
+        {this.state.showAddForm ? <AddPostForm handleAddFormHide={this.handleAddFormHide} /> : null}
+
+        <>
+          <h1>Simple Blog</h1>
+          <button className="blackBtn" onClick={this.handleAddFormShow}>
+            Создать новый пост
+          </button>
+          <div className="posts">{blogPosts}</div>
+        </>
       </>
     );
   }
