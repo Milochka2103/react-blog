@@ -8,8 +8,27 @@ export class BlogContent extends Component {
   state = {
     showAddForm: false,
     blogArr: [],
+    isPending: false
   };
 
+  fetchPosts = () => {
+    this.setState({
+      isPending: true
+    })
+    const axios = require("axios");
+    axios
+      .get("https://62271e6d2dfa52401814a3df.mockapi.io/api/users")
+      .then((response) => {
+        this.setState({
+          blogArr: response.data,
+          isPending: false
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+  
   likePost = (pos) => {
     const temp = [...this.state.blogArr];
     temp[pos].liked = !temp[pos].liked;
@@ -21,16 +40,21 @@ export class BlogContent extends Component {
     localStorage.setItem("blogPosts", JSON.stringify(temp));
   };
 
-  deletePost = (pos) => {
-    if (window.confirm(`Удалить ${this.state.blogArr[pos].title}?`)) {
-      const temp = [...this.state.blogArr];
-      temp.splice(pos, 1);
+  deletePost = (blogPost) => {
+    if (window.confirm(`Удалить ${blogPost.title}?`)) {
+      const axios = require("axios");
 
-      this.setState({
-        blogArr: temp,
-      });
-
-      localStorage.setItem("blogPosts", JSON.stringify(temp));
+      axios
+        .delete(
+          `https://62271e6d2dfa52401814a3df.mockapi.io/api/users/${blogPost.id}`
+        )
+        .then((response) => {
+          console.log("Пост удален => ", response.data);
+          this.fetchPosts()
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     }
   };
 
@@ -68,16 +92,7 @@ export class BlogContent extends Component {
 
   //делаем скрытие формы по кнопке Esc, e - обьект события
   componentDidMount() {
-    const axios = require("axios");
-    axios.get('https://62271e6d2dfa52401814a3df.mockapi.io/api/users')
-      .then((response) => {
-        this.setState({
-          blogArr: response.data
-        })
-      })
-      .catch((err) => {
-        console.log(err)
-      })
+    this.fetchPosts();
     window.addEventListener("keyup", this.handleEscape);
   }
 
@@ -95,13 +110,12 @@ export class BlogContent extends Component {
           description={item.description}
           liked={item.liked}
           likePost={() => this.likePost(pos)}
-          deletePost={() => this.deletePost(pos)}
+          deletePost={() => this.deletePost(item)}
         />
       );
     });
 
-    if (this.state.blogArr.length === 0)
-      return <h1>Загружаю данные...</h1>
+    if (this.state.blogArr.length === 0) return <h1>Загружаю данные...</h1>;
 
     return (
       <div className="blogPage">
@@ -119,6 +133,9 @@ export class BlogContent extends Component {
               Создать новый пост
             </button>
           </div>
+          {
+            this.state.isPending && <h2>Подождите</h2>
+          }
           <div className="posts">{blogPosts}</div>
         </>
       </div>
