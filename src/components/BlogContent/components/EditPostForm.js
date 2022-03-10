@@ -1,11 +1,11 @@
-import "./AddPostForm.css";
+import "./EditPostForm.css";
 import CancelIcon from "@material-ui/icons/Cancel";
 import { Component } from "react";
 
-export class AddPostForm extends Component {
+export class EditPostForm extends Component {
   state = {
-    postTitle: "",
-    postDesc: "",
+    postTitle: this.props.selectedPost.title,
+    postDesc: this.props.selectedPost.description,
   };
 
   handlePostTitleChange = (e) => {
@@ -20,22 +20,23 @@ export class AddPostForm extends Component {
     });
   };
 
-  createPost = (e) => {
+  savePost = (e) => {
     e.preventDefault();
     const post = {
+      id: this.props.selectedPost.id,
       title: this.state.postTitle,
       description: this.state.postDesc,
-      liked: false,
+      liked: this.props.selectedPost.liked,
     };
 
-    this.props.addNewBlogPost(post);
-    this.props.handleAddFormHide();
+    this.props.editBlogPost(post);
+    this.props.handleEditFormHide();
   };
 
   handleEscape = (e) => {
     //если нажали на Esc и форма показано, то скрываем форму
     if (e.key === "Escape") {
-      this.props.handleAddFormHide();
+      this.props.handleEditFormHide();
     }
   };
   // в классовых компонентах можно использовать эти методы
@@ -46,19 +47,18 @@ export class AddPostForm extends Component {
   }
 
   componentWillUnmount() {
-     window.removeEventListener('keyup', this.handleEscape)
+    window.removeEventListener("keyup", this.handleEscape);
   }
 
-  //render отвечает за саму отрисовку, срабатывает каждый раз, и при отрисвке, и при изменениях
   render() {
-    const handleAddFormHide = this.props.handleAddFormHide;
+    const handleEditFormHide = this.props.handleEditFormHide;
     return (
       <>
-        <form className="AddPostForm" onSubmit={this.createPost}>
-          <button className="hideBtn" onClick={handleAddFormHide}>
+        <form className="editPostForm" onSubmit={this.savePost}>
+          <button className="hideBtn" onClick={handleEditFormHide}>
             <CancelIcon />
           </button>
-          <h2>Создание поста</h2>
+          <h2>Редактирование поста</h2>
           <div>
             <input
               className="addFormInput"
@@ -72,7 +72,7 @@ export class AddPostForm extends Component {
           </div>
           <div>
             <textarea
-              className="addFormInput"
+              className="editFormInput"
               name="postDescription"
               placeholder="Описание поста"
               value={this.state.postDesc}
@@ -82,12 +82,12 @@ export class AddPostForm extends Component {
           </div>
           <div>
             <button className="blackBtn" type="submit">
-              Добавить пост
+              Сохранить
             </button>
           </div>
         </form>
-        <div onClick={handleAddFormHide} className="overlay"></div>
+        <div onClick={handleEditFormHide} className="overlay"></div>
       </>
     );
   }
-};
+}

@@ -4,12 +4,15 @@ import { AddPostForm } from "./components/AddPostForm";
 import { BlogCard } from "./components/BlogCard";
 import { axios } from "axios";
 import CircularProgress from "@mui/material/CircularProgress";
+import { EditPostForm } from "./components/EditPostForm";
 
 export class BlogContent extends Component {
   state = {
     showAddForm: false,
+    showEditForm: false,
     blogArr: [],
     isPending: false,
+    selectedPost: {},
   };
 
   fetchPosts = () => {
@@ -48,9 +51,9 @@ export class BlogContent extends Component {
 
   deletePost = (blogPost) => {
     if (window.confirm(`Удалить ${blogPost.title}?`)) {
-       this.setState({
-         isPending: true,
-       });
+      this.setState({
+        isPending: true,
+      });
       const axios = require("axios");
 
       axios
@@ -69,9 +72,9 @@ export class BlogContent extends Component {
 
   //добавляем новый пост в массив
   addNewBlogPost = (blogPost) => {
-     this.setState({
-       isPending: true,
-     });
+    this.setState({
+      isPending: true,
+    });
     const axios = require("axios");
     axios
       .post("https://62271e6d2dfa52401814a3df.mockapi.io/api/users/", blogPost)
@@ -82,6 +85,24 @@ export class BlogContent extends Component {
       .catch((err) => {
         console.log(err);
       });
+  };
+
+  editBlogPost = (updatedBlogPost) => {
+    this.setState({
+      isPending: true,
+    });
+    const axios = require("axios");
+    axios.put(
+      `https://62271e6d2dfa52401814a3df.mockapi.io/api/users/${updatedBlogPost.id}`,
+      updatedBlogPost
+    )
+    .then((response) => {
+      console.log("Пост отредоктирован =>", response.data);
+      this.fetchPosts();
+      })
+    .catch((err) => {
+      console.log(err);
+    });
   };
 
   handleAddFormShow = () => {
@@ -96,25 +117,31 @@ export class BlogContent extends Component {
     });
   };
 
-  handleEscape = (e) => {
-    //если нажали на Esc и форма показано, то скрываем форму
-    if (e.key === "Escape" && this.state.showAddForm) {
-      this.handleAddFormHide();
-    }
+  handleEditFormShow = () => {
+    this.setState({
+      showEditForm: true,
+    });
+  };
+
+  handleEditFormHide = () => {
+    this.setState({
+      showEditForm: false,
+    });
+  };
+
+  handleSelectPost = (blogPost) => {
+    this.setState({
+      selectedPost: blogPost,
+    });
   };
 
   //делаем скрытие формы по кнопке Esc, e - обьект события
   componentDidMount() {
     this.fetchPosts();
-    window.addEventListener("keyup", this.handleEscape);
-  }
-
-  //чистим из истории
-  componentWillUnmount() {
-    window.removeEventListener("keyup", this.handleEscape);
   }
 
   render() {
+    console.log(this.state.selectedPost);
     const blogPosts = this.state.blogArr.map((item) => {
       return (
         <BlogCard
@@ -124,13 +151,15 @@ export class BlogContent extends Component {
           liked={item.liked}
           likePost={() => this.likePost(item)}
           deletePost={() => this.deletePost(item)}
+          handleEditFormShow={this.handleEditFormShow}
+          handleSelectPost={() => this.handleSelectPost(item)}
         />
       );
     });
 
     if (this.state.blogArr.length === 0) return <h1>Загружаю данные...</h1>;
 
-    const postOpacity = this.state.isPending ? 0.5 : 1
+    const postOpacity = this.state.isPending ? 0.5 : 1;
 
     return (
       <div className="blogPage">
@@ -141,7 +170,14 @@ export class BlogContent extends Component {
             handleAddFormHide={this.handleAddFormHide}
           />
         )}
-
+        
+        {this.state.showEditForm && (
+          <EditPostForm
+            handleEditFormHide={this.handleEditFormHide}
+            selectedPost={this.state.selectedPost}
+            editBlogPost={this.editBlogPost}
+          />
+        )}
         <>
           <div className="addNewPost">
             <button className="blackBtn" onClick={this.handleAddFormShow}>
