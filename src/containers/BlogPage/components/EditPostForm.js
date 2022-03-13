@@ -77,6 +77,7 @@ export class EditPostForm extends Component {
               placeholder="Описание поста"
               value={this.state.postDesc}
               onChange={this.handlePostDescChange}
+              rows={8}
               required
             />
           </div>

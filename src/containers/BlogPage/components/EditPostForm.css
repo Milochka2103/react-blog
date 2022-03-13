@@ -1,4 +1,4 @@
-.AddPostForm {
+.editPostForm {
   position: fixed;
   left: 50%;
   top: 50%;
@@ -6,7 +6,7 @@
   z-index: 100;
 
   background-color: white;
-  width: 300px;
+  width: 350px;
   padding: 20px;
 
   text-align: center;
@@ -19,11 +19,11 @@
   right: 0;
 }
 
-.AddPostForm div + div {
+.editPostForm div + div {
   margin-top: 10px;
 }
 
-.AddPostForm h2 {
+.PostForm h2 {
   margin: 0;
   margin-bottom: 10px;
 }
@@ -38,6 +38,26 @@
 .addFormInput:focus::placeholder {
   color: transparent;
 }
+
+.editFormInput {
+  width: 100%;
+  padding: 4px 5px;
+  border-radius: 8px;
+  border: 1px solid rgb(172, 170, 170);
+}
+
+.editFormInput:focus::placeholder {
+  color: transparent;
+}
+
+.blackBtn {
+  padding: 5px 15px;
+  border-radius: 16px;
+  background-color: black;
+  color: white;
+  transition: .2s;
+}
+
 .overlay {
   position: fixed;
   left: 0;

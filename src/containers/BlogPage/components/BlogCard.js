@@ -32,7 +32,7 @@ export const BlogCard = ({
         </div>
       </div>
       < div className="postControl">
-      <button className="editBtn" onClick={showEditForm}>
+        <button className="editBtn" onClick={showEditForm}>
         <EditIcon />
       </button>
       <button className="deleteBtn" onClick={deletePost}>

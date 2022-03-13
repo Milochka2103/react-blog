@@ -1,0 +1,36 @@
+.blackBtn {
+  padding: 5px 15px;
+  border-radius: 16px;
+  background-color: black;
+  color: white;
+  transition: .2s;
+}
+
+.loginForm {
+  width: max-content;
+  padding: 20px;
+  margin: 0 auto;
+
+  text-align: center;
+  border-radius: 10px;
+}
+
+.loginPostForm h2 {
+  margin: 0;
+  margin-bottom: 10px;
+}
+
+.loginFormInput {
+  width: 100%;
+  padding: 4px 5px;
+  border-radius: 8px;
+  border: 1px solid rgb(172, 170, 170);
+}
+
+.loginFormInput:focus::placeholder {
+  color: transparent;
+}
+
+.loginForm button {
+  width: 100%;
+}

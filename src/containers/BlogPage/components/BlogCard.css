@@ -14,5 +14,9 @@
 }
 
 .deleteBtn svg {
-  font-size: 30px;
+  font-size: 25px;
+}
+
+.editBtn svg {
+  font-size: 20px;
 }

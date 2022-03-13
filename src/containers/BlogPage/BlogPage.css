@@ -10,8 +10,9 @@
   color: black;
 }
 
-.addNewPost {
+.NewPost {
   text-align: center;
+  margin-top: 20px;
 }
 
 .posts {

@@ -1,12 +1,15 @@
 import { Component } from "react";
-import "./BlogContent.css";
+import "./BlogPage.css";
 import { AddPostForm } from "./components/AddPostForm";
 import { BlogCard } from "./components/BlogCard";
 import { axios } from "axios";
 import CircularProgress from "@mui/material/CircularProgress";
 import { EditPostForm } from "./components/EditPostForm";
+import { postsUrl } from "../../shared/projectData";
 
-export class BlogContent extends Component {
+let source;
+
+export class BlogPage extends Component {
   state = {
     showAddForm: false,
     showEditForm: false,
@@ -15,10 +18,11 @@ export class BlogContent extends Component {
     selectedPost: {},
   };
 
-  fetchPosts = () => {
+  fetchPosts = () => { 
     const axios = require("axios");
+    source = axios.CancelToken.source();
     axios
-      .get("https://62271e6d2dfa52401814a3df.mockapi.io/api/users")
+      .get(postsUrl, {CancelToken: source.token})
       .then((response) => {
         this.setState({
           blogArr: response.data,
@@ -30,16 +34,25 @@ export class BlogContent extends Component {
       });
   };
 
+  componentDidMount() {
+    this.fetchPosts();
+  }
+
+  componentWillUnmount() {
+    const axios = require("axios");
+    let source = axios.CancelToken.source();
+    if (source) {
+      source.cancel('Axios get canceled')
+    }
+  }
+
   likePost = (blogPost) => {
     const temp = { ...blogPost };
     temp.liked = !temp.liked;
 
     const axios = require("axios");
     axios
-      .put(
-        `https://62271e6d2dfa52401814a3df.mockapi.io/api/users/${blogPost.id}`,
-        temp
-      )
+      .put(`${postsUrl}${blogPost.id}`, temp)
       .then((response) => {
         console.log("Пост изменен => ", response.data);
         this.fetchPosts();
@@ -57,9 +70,7 @@ export class BlogContent extends Component {
       const axios = require("axios");
 
       axios
-        .delete(
-          `https://62271e6d2dfa52401814a3df.mockapi.io/api/users/${blogPost.id}`
-        )
+        .delete(`${postsUrl}${blogPost.id}`)
         .then((response) => {
           console.log("Пост удален => ", response.data);
           this.fetchPosts();
@@ -77,7 +88,7 @@ export class BlogContent extends Component {
     });
     const axios = require("axios");
     axios
-      .post("https://62271e6d2dfa52401814a3df.mockapi.io/api/users/", blogPost)
+      .post(postsUrl, blogPost)
       .then((response) => {
         console.log("Пост создан =>", response.data);
         this.fetchPosts();
@@ -92,17 +103,15 @@ export class BlogContent extends Component {
       isPending: true,
     });
     const axios = require("axios");
-    axios.put(
-      `https://62271e6d2dfa52401814a3df.mockapi.io/api/users/${updatedBlogPost.id}`,
-      updatedBlogPost
-    )
-    .then((response) => {
-      console.log("Пост отредоктирован =>", response.data);
-      this.fetchPosts();
+    axios
+      .put(`${postsUrl}${updatedBlogPost.id}`, updatedBlogPost)
+      .then((response) => {
+        console.log("Пост отредоктирован =>", response.data);
+        this.fetchPosts();
       })
-    .catch((err) => {
-      console.log(err);
-    });
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   handleAddFormShow = () => {
@@ -135,11 +144,6 @@ export class BlogContent extends Component {
     });
   };
 
-  //делаем скрытие формы по кнопке Esc, e - обьект события
-  componentDidMount() {
-    this.fetchPosts();
-  }
-
   render() {
     console.log(this.state.selectedPost);
     const blogPosts = this.state.blogArr.map((item) => {
@@ -170,7 +174,7 @@ export class BlogContent extends Component {
             handleAddFormHide={this.handleAddFormHide}
           />
         )}
-        
+
         {this.state.showEditForm && (
           <EditPostForm
             handleEditFormHide={this.handleEditFormHide}
@@ -179,7 +183,7 @@ export class BlogContent extends Component {
           />
         )}
         <>
-          <div className="addNewPost">
+          <div className="NewPost">
             <button className="blackBtn" onClick={this.handleAddFormShow}>
               Создать новый пост
             </button>

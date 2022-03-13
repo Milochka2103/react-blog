@@ -46,7 +46,7 @@ export class AddPostForm extends Component {
   }
 
   componentWillUnmount() {
-     window.removeEventListener('keyup', this.handleEscape)
+    window.removeEventListener("keyup", this.handleEscape);
   }
 
   //render отвечает за саму отрисовку, срабатывает каждый раз, и при отрисвке, и при изменениях
@@ -77,6 +77,7 @@ export class AddPostForm extends Component {
               placeholder="Описание поста"
               value={this.state.postDesc}
               onChange={this.handlePostDescChange}
+              rows={8}
               required
             />
           </div>
@@ -90,4 +91,4 @@ export class AddPostForm extends Component {
       </>
     );
   }
-};
+}
