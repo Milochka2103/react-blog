@@ -5,6 +5,12 @@
   height: 50px;
 }
 
+.mainHeader nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .mainHeader a {
   color:black;
   font-weight: 500;
@@ -14,6 +20,10 @@
 
   display: inline-block;
   margin: 0 10px;
+
+  display: flex;
+  align-items: center;
+  justify-content: right;
 }
 
 .mainHeader a:hover {

@@ -1,14 +1,27 @@
-import { Link } from 'react-router-dom';
-import './Header.css'
+import { NavLink } from 'react-router-dom';
+import './Header.css';
+import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 
-export const Header = () => {
+export const Header = ({ isLoggedIn, setIsLoggedIn, userName }) => {
+
+  const handleLogOut = () => {
+    localStorage.setItem('isLoggedIn', false)
+    setIsLoggedIn(false);
+  }
 
   return (
     <header className="mainHeader">
-      <nav>
-        <Link to="/">Home</Link>
-        <Link to="login">Login</Link>
-      </nav>
+      {isLoggedIn ? (
+        <nav>
+          Добро пожаловать, &nbsp; <strong>{userName}</strong>
+          <NavLink onClick={handleLogOut} exact to="/login">
+            <ExitToAppIcon />
+            Выход
+          </NavLink>
+        </nav>
+      ) : (
+        "Добро пожаловать, незнакомец!"
+      )}
     </header>
   );
-}
+};
