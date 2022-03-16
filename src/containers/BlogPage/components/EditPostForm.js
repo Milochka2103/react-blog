@@ -1,60 +1,57 @@
 import "./EditPostForm.css";
 import CancelIcon from "@material-ui/icons/Cancel";
-import { Component } from "react";
+import { useEffect, useState } from "react";
 
-export class EditPostForm extends Component {
-  state = {
-    postTitle: this.props.selectedPost.title,
-    postDesc: this.props.selectedPost.description,
+export const EditPostForm = (props) => {
+
+  const [postTitle, setPostTitle] = useState(props.selectedPost.title)
+  const [postDesc, setPostDesc] = useState(props.selectedPost.description)
+
+  const handlePostTitleChange = (e) => {
+    setPostTitle(e.target.value)
   };
 
-  handlePostTitleChange = (e) => {
-    this.setState({
-      postTitle: e.target.value,
-    });
+  const handlePostDescChange = (e) => {
+    setPostDesc(e.target.value)
   };
 
-  handlePostDescChange = (e) => {
-    this.setState({
-      postDesc: e.target.value,
-    });
-  };
-
-  savePost = (e) => {
+  const savePost = (e) => {
     e.preventDefault();
     const post = {
-      id: this.props.selectedPost.id,
-      title: this.state.postTitle,
-      description: this.state.postDesc,
-      liked: this.props.selectedPost.liked,
+      id: props.selectedPost.id,
+      title: postTitle,
+      description: postDesc,
+      liked: props.selectedPost.liked,
     };
 
-    this.props.editBlogPost(post);
-    this.props.handleEditFormHide();
+    props.editBlogPost(post);
+    props.handleEditFormHide();
   };
 
-  handleEscape = (e) => {
+  useEffect(() => {
+    const handleEscape = (e) => {
     //если нажали на Esc и форма показано, то скрываем форму
     if (e.key === "Escape") {
-      this.props.handleEditFormHide();
+      props.handleEditFormHide();
     }
   };
-  // в классовых компонентах можно использовать эти методы
-  //componentDidMount - вызывается, когда компонент полностью готов
+    window.addEventListener("keyup", handleEscape)
 
-  componentDidMount() {
-    window.addEventListener("keyup", this.handleEscape);
-  }
+    return () => window.removeEventListener("keyup", handleEscape);
+  }, [props])
 
-  componentWillUnmount() {
-    window.removeEventListener("keyup", this.handleEscape);
-  }
+  //componentDidMount() {
+  //  window.addEventListener("keyup", handleEscape);
+  //}
 
-  render() {
-    const handleEditFormHide = this.props.handleEditFormHide;
+  //componentWillUnmount() {
+  //  window.removeEventListener("keyup", handleEscape);
+  //}
+
+  const handleEditFormHide = props.handleEditFormHide;
     return (
       <>
-        <form className="editPostForm" onSubmit={this.savePost}>
+        <form className="editPostForm" onSubmit={savePost}>
           <button className="hideBtn" onClick={handleEditFormHide}>
             <CancelIcon />
           </button>
@@ -65,8 +62,8 @@ export class EditPostForm extends Component {
               type="text"
               name="postTitle"
               placeholder="Заголовок поста"
-              value={this.state.postTitle}
-              onChange={this.handlePostTitleChange}
+              value={postTitle}
+              onChange={handlePostTitleChange}
               required
             />
           </div>
@@ -75,8 +72,8 @@ export class EditPostForm extends Component {
               className="editFormInput"
               name="postDescription"
               placeholder="Описание поста"
-              value={this.state.postDesc}
-              onChange={this.handlePostDescChange}
+              value={postDesc}
+              onChange={handlePostDescChange}
               rows={8}
               required
             />
@@ -90,5 +87,4 @@ export class EditPostForm extends Component {
         <div onClick={handleEditFormHide} className="overlay"></div>
       </>
     );
-  }
 }
