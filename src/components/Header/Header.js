@@ -2,11 +2,13 @@ import { NavLink } from 'react-router-dom';
 import './Header.css';
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 
-export const Header = ({ isLoggedIn, setIsLoggedIn, userName }) => {
+export const Header = ({ isLoggedIn, setIsLoggedIn, userName, setIsAdmin }) => {
 
   const handleLogOut = () => {
-    localStorage.setItem('isLoggedIn', false)
+    localStorage.removeItem('isLoggedIn')
+    localStorage.removeItem("userName");
     setIsLoggedIn(false);
+    setIsAdmin(false);
   }
 
   return (

@@ -6,10 +6,7 @@ import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { postsUrl } from "../../../shared/projectData";
 
-export const BlogCard = ({
-  title,
-  description,
-  liked,
+export const BlogCardPage = ({
   likePost,
   deletePost,
   handleEditFormShow,
@@ -25,33 +22,25 @@ export const BlogCard = ({
   const [post, setPost] = useState({});
 
   useEffect(() => {
-    if (postId) {
-      const axios = require("axios");
-      axios
-        .get(postsUrl + postId)
-        .then((response) => {
-          setPost(response.data)
-        })
+    const axios = require("axios");
+    axios
+      .get(postsUrl + postId)
+      .then((response) => {
+        setPost(response.data);
+      })
 
-        .catch((err) => {
-          console.log(err);
-        });
-    }
+      .catch((err) => {
+        console.log(err);
+      });
   }, [postId, setPost]);
 
-  let heartFill;
-
-  if (postId) {
-    heartFill = post.liked ? "crimson" : "black";
-  } else {
-    heartFill = liked ? "crimson" : "black";
-  }
+  const heartFil = post.liked ? "crimson" : "black";
 
   return (
     <div className="post">
       <div className="postContent">
-        <h2>{postId ? post.title : title}</h2>
-        <p>{postId ? post.description : description}</p>
+        <h2>{post.title}</h2>
+        <p>{post.description}</p>
         <div>
           <button onClick={likePost}>
             <FavoriteIcon style={{ fill: heartFill }} />

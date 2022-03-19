@@ -5,6 +5,11 @@ import { Footer } from "./components/Footer/Footer";
 import { Header } from "./components/Header/Header";
 import { LoginPage } from "./containers/LoginPage/LoginPage";
 import { useState } from "react";
+import { NoMatch } from "./containers/NoMatch/NoMatch";
+import { PublicRoute } from "./components/PublicRoute/PublicRoute";
+import { PrivateRoute } from "./components/PrivateRoute/PrivateRoute";
+import { BlogCard } from "./containers/BlogPage/components/BlogCard";
+import { BlogCardPage } from "./containers/BlogPage/components/BlogCardPage";
 
 export function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(
@@ -12,6 +17,7 @@ export function App() {
   );
 
   const [userName, setUserName] = useState(localStorage.getItem("userName"));
+  const [isAdmin, setIsAdmin] = useState(localStorage.getItem("userName") === "admin");
 
   return (
     <Router>
@@ -20,6 +26,7 @@ export function App() {
           userName={userName}
           isLoggedIn={isLoggedIn}
           setIsLoggedIn={setIsLoggedIn}
+          setIsAdmin={setIsAdmin}
         />
 
         <main>
@@ -33,27 +40,38 @@ export function App() {
               }}
             />
 
-            <Route
-              exact
-              path="/login"
-              render={(props) => (
-                !isLoggedIn ?
-                <LoginPage
-                  {...props}
-                  setIsLoggedIn={setIsLoggedIn}
-                  setUserName={setUserName}
-                /> : <Redirect to="/blog" />
-              )}
-            />
+            <PublicRoute isLoggedIn={isLoggedIn} path="/login" exact>
+              <LoginPage
+                setIsLoggedIn={setIsLoggedIn}
+                setUserName={setUserName}
+                setIsAdmin={setIsAdmin}
+              />
+            </PublicRoute>
+            
+            <PrivateRoute isLoggedIn={isLoggedIn} path="/blog/:postId" exact>
+              <BlogCardPage isAdmin={ isAdmin}/>
+            </PrivateRoute>
+            
 
-            <Route
-              exact
-              path="/blog"
-              render={(props) => {
-                if (isLoggedIn) return <BlogPage {...props} />;
-                return <Redirect to="/login" />;
+            <PrivateRoute isLoggedIn={isLoggedIn} path="/blog" exact>
+              <BlogPage isAdmin={ isAdmin}/>
+            </PrivateRoute>
+
+            
+            <Route exact path="/404">
+              <NoMatch />
+            </Route>
+
+            <Route path="*"
+              render={({location}) => {
+                return <Redirect to={{
+                  pathname:"/404",
+                  from: location
+                }} />
               }}
             />
+
+
           </Switch>
         </main>
 

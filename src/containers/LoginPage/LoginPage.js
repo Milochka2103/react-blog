@@ -5,7 +5,8 @@ import './LoginPage.css'
 export const LoginPage = ({
   setIsLoggedIn,
   history,
-  setUserName
+  setUserName,
+  setIsAdmin
 }) => {
 
   const [login, setLogin] = useState('');
@@ -17,16 +18,23 @@ export const LoginPage = ({
 
   const handlePasswordChange = (e) => 
     setPassword(e.target.value)
-
+ 
   const handleLogin = (e) => {
     e.preventDefault();
 
+    if (login === 'admin') {
+      if (password === 'mila') setIsAdmin(true);
+    else {
+      alert('Вdедите правильный логин или пароль!');
+      return false;
+    }
+  }
     localStorage.setItem('isLoggedIn', true);
     localStorage.setItem('userName', login);
 
     setUserName(login);
-    setIsLoggedIn(true)
-    history.push('/')
+    setIsLoggedIn(true);
+    history.push('/');
   }
 
   return (
