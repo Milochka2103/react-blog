@@ -2,42 +2,118 @@ import "./BlogCard.css";
 import FavoriteIcon from "@material-ui/icons/Favorite";
 import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
 import EditIcon from "@material-ui/icons/Edit";
-import { useParams } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { postsUrl } from "../../../shared/projectData";
+import { EditPostForm } from "./EditPostForm";
+import CircularProgress from "@mui/material/CircularProgress";
 
 export const BlogCardPage = ({
-  likePost,
-  deletePost,
-  handleEditFormShow,
-  handleSelectPost,
   isAdmin
 }) => {
-  const showEditForm = () => {
-    handleSelectPost();
-    handleEditFormShow();
-  };
-
   const {postId} = useParams();
   const [post, setPost] = useState({});
 
-  useEffect(() => {
+  const [isPending, setIsPending] = useState(false);
+  const [selectedPost, setSelectedPost] = useState({});
+  const [showEditForm, setShowEditForm] = useState(false);
+
+  const history = useHistory();
+
+  const fetchPost = (id) => {
     const axios = require("axios");
     axios
-      .get(postsUrl + postId)
+      .get(postsUrl + id)
       .then((response) => {
         setPost(response.data);
+        setIsPending(false)
       })
 
       .catch((err) => {
         console.log(err);
       });
-  }, [postId, setPost]);
+  };
 
-  const heartFil = post.liked ? "crimson" : "black";
+  useEffect(() => {
+    fetchPost(postId);
+  }, [postId]);
+
+  const likePost = () => {
+    const temp = { ...post };
+    temp.liked = !temp.liked;
+
+    const axios = require("axios");
+    axios
+      .put(`${postsUrl}${postId}`, temp)
+      .then((response) => {
+        console.log("Пост изменен => ", response.data);
+        fetchPost(postId);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const deletePost = (blogPost) => {
+    if (window.confirm(`Удалить ${post.title}?`)) {
+      setIsPending(true);
+
+      const axios = require("axios");
+      axios
+        .delete(`${postsUrl}${postId}`)
+        .then((response) => {
+          console.log("Пост удален => ", response.data);
+          setIsPending(false);
+          history.push('/blog');
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  };
+
+  const editBlogPost = (updatedBlogPost) => {
+    setIsPending(true);
+
+    const axios = require("axios");
+    axios
+      .put(`${postsUrl}${postId}`, updatedBlogPost)
+      .then((response) => {
+        console.log("Пост отредактирован =>", response.data);
+        fetchPost(postId);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const handleEditFormShow = (blogPost) => {
+    setShowEditForm(true);
+    setSelectedPost(blogPost);
+
+  };
+
+  const handleEditFormHide = () => {
+    setShowEditForm(false);
+  };
+
+  if (!post.title) return <h1>Загружаю данные...</h1>;
+
+  const postOpacity = isPending ? 0.5 : 1;
+  const heartFill = post.liked ? "crimson" : "black";
 
   return (
-    <div className="post">
+    <>
+    <div className="post" style={
+      {opacity:postOpacity}
+    }>
+      {showEditForm && (
+        <EditPostForm
+          handleEditFormHide={handleEditFormHide}
+          selectedPost={selectedPost}
+          editBlogPost={editBlogPost}
+        />
+      )}
       <div className="postContent">
         <h2>{post.title}</h2>
         <p>{post.description}</p>
@@ -51,7 +127,7 @@ export const BlogCardPage = ({
       {
         isAdmin && (
         <div className="postControl">
-          <button className="editBtn" onClick={showEditForm}>
+          <button className="editBtn" onClick={() => handleEditFormShow(post)}>
             <EditIcon />
           </button>
           <button className="deleteBtn" onClick={deletePost}>
@@ -60,7 +136,8 @@ export const BlogCardPage = ({
         </div>
         )
       }
-
     </div>
+    {isPending && <CircularProgress className="preloader" />}
+    </>
   );
 };

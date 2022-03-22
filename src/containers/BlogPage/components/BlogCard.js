@@ -2,9 +2,6 @@ import "./BlogCard.css";
 import FavoriteIcon from "@material-ui/icons/Favorite";
 import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
 import EditIcon from "@material-ui/icons/Edit";
-import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { postsUrl } from "../../../shared/projectData";
 
 export const BlogCard = ({
   title,
@@ -21,37 +18,14 @@ export const BlogCard = ({
     handleEditFormShow();
   };
 
-  const {postId} = useParams();
-  const [post, setPost] = useState({});
 
-  useEffect(() => {
-    if (postId) {
-      const axios = require("axios");
-      axios
-        .get(postsUrl + postId)
-        .then((response) => {
-          setPost(response.data)
-        })
-
-        .catch((err) => {
-          console.log(err);
-        });
-    }
-  }, [postId, setPost]);
-
-  let heartFill;
-
-  if (postId) {
-    heartFill = post.liked ? "crimson" : "black";
-  } else {
-    heartFill = liked ? "crimson" : "black";
-  }
+  const heartFill = liked ? "crimson" : "black";
 
   return (
     <div className="post">
       <div className="postContent">
-        <h2>{postId ? post.title : title}</h2>
-        <p>{postId ? post.description : description}</p>
+        <h2>{title}</h2>
+        <p>{description}</p>
         <div>
           <button onClick={likePost}>
             <FavoriteIcon style={{ fill: heartFill }} />

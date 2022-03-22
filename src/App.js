@@ -10,6 +10,7 @@ import { PublicRoute } from "./components/PublicRoute/PublicRoute";
 import { PrivateRoute } from "./components/PrivateRoute/PrivateRoute";
 import { BlogCard } from "./containers/BlogPage/components/BlogCard";
 import { BlogCardPage } from "./containers/BlogPage/components/BlogCardPage";
+import { useGetPosts } from "./shared/queries";
 
 export function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(
@@ -18,6 +19,8 @@ export function App() {
 
   const [userName, setUserName] = useState(localStorage.getItem("userName"));
   const [isAdmin, setIsAdmin] = useState(localStorage.getItem("userName") === "admin");
+
+  const {data, isLoading, isError, error, isFetching } = useGetPosts();
 
   return (
     <Router>
